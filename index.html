@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Meteo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .weather-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 320px;
+        }
+        h1 { margin-top: 0; font-size: 1.5rem; color: #2c3e50; }
+        .search-box {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px 0 0 20px;
+            outline: none;
+            font-family: inherit;
+        }
+        .search-box button {
+            padding: 10px 20px;
+            border: none;
+            background: #74ebd5;
+            color: #2c3e50;
+            font-weight: bold;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .search-box button:hover { background: #56d4bc; }
+        
+        .weather-info { display: none; margin-top: 1rem; }
+        .temp { font-size: 3rem; font-weight: bold; margin: 10px 0; color: #2c3e50; }
+        .city-name { font-size: 1.2rem; font-weight: 600; }
+        .error { color: red; display: none; margin-top: 10px; font-size: 0.9rem; }
+        .loading { display: none; font-size: 0.9rem; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="weather-card">
+        <h1>Previsioni Meteo</h1>
+        <div class="search-box">
+            <input type="text" id="city-input" placeholder="Es. Roma, Milano..." onkeypress="handleEnter(event)">
+            <button onclick="getWeather()">Cerca</button>
+        </div>
+        
+        <div id="loading" class="loading">Caricamento dati... ⏳</div>
+        <div id="error-message" class="error">Città non trovata. Riprova.</div>
+        
+        <div id="weather-info" class="weather-info">
+            <div class="city-name" id="display-city">Roma</div>
+            <div class="temp"><span id="temp-value">25</span>°C</div>
+            <div id="weather-desc">Vento: 10 km/h</div>
+        </div>
+    </div>
+    <script>
+        // Permette di cercare premendo "Invio" sulla tastiera
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                getWeather();
+            }
+        }
+        // Funzione Asincrona: aspetta che i server esterni ci rispondano
+        async function getWeather() {
+            const cityInput = document.getElementById('city-input').value.trim();
+            if (cityInput === '') return;
+            const weatherInfo = document.getElementById('weather-info');
+            const errorMessage = document.getElementById('error-message');
+            const loading = document.getElementById('loading');
+            // Nascondiamo i vecchi dati e mostriamo "Caricamento"
+            weatherInfo.style.display = 'none';
+            errorMessage.style.display = 'none';
+            loading.style.display = 'block';
+            try {
+                // 1. Chiamata API per trasformare il nome della città in coordinate GPS
+                const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${cityInput}&count=1&language=it&format=json`;
+                const geoResponse = await fetch(geoUrl);
+                const geoData = await geoResponse.json();
+                if (!geoData.results || geoData.results.length === 0) {
+                    throw new Error("Città non trovata");
+                }
+                // Estraiamo latitudine, longitudine e nome preciso dal file JSON
+                const lat = geoData.results[0].latitude;
+                const lon = geoData.results[0].longitude;
+                const cityName = geoData.results[0].name;
+                // 2. Seconda chiamata API per avere il meteo usando le coordinate
+                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
+                const weatherResponse = await fetch(weatherUrl);
+                const weatherData = await weatherResponse.json();
+                // Estraiamo la temperatura dal JSON
+                const currentTemp = weatherData.current_weather.temperature;
+                const windSpeed = weatherData.current_weather.windspeed;
+                
+                // Aggiorniamo l'interfaccia HTML con i dati VERI appena scaricati!
+                document.getElementById('display-city').textContent = cityName;
+                document.getElementById('temp-value').textContent = Math.round(currentTemp);
+                document.getElementById('weather-desc').textContent = "Vento: " + windSpeed + " km/h";
+                // Togliamo "caricamento" e mostriamo i dati
+                loading.style.display = 'none';
+                weatherInfo.style.display = 'block';
+            } catch (error) {
+                console.error(error);
+                loading.style.display = 'none';
+                errorMessage.style.display = 'block'; // Mostra errore se la città non esiste
+            }
+        }
+    </script>
+</body>
+</html>
