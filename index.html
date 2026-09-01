@@ -6,19 +6,17 @@
     <title>Meteo Pro Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Variabili CSS per un tema scuro moderno (Dashboard Professionale) */
+        /* Variabili CSS */
         :root {
-            --bg-color: #0f172a; /* Slate 900 */
-            --card-bg: #1e293b; /* Slate 800 */
+            --card-bg: rgba(30, 41, 59, 0.85); /* Leggermente trasparente per far intravedere lo sfondo */
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #38bdf8; /* Sky 400 */
+            --text-muted: #cbd5e1;
+            --accent: #38bdf8;
             --accent-hover: #0ea5e9;
-            --border: #334155;
+            --border: rgba(255, 255, 255, 0.1);
         }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
             padding: 0;
@@ -26,17 +24,21 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            /* Sfondo di default che verrà sostituito da Javascript */
+            background-color: #0f172a; 
             background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
+            transition: background-image 1s ease-in-out; /* Transizione morbida quando cambia la foto */
         }
         .dashboard {
             width: 100%;
             max-width: 800px;
             background: var(--card-bg);
             border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
             padding: 2.5rem;
             border: 1px solid var(--border);
             margin: 20px;
+            backdrop-filter: blur(12px); /* Effetto vetro sfocato bellissimo! */
         }
         /* --- HEADER & SEARCH --- */
         .header {
@@ -55,6 +57,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .search-container {
             display: flex;
@@ -66,7 +69,7 @@
             padding: 12px 20px;
             border-radius: 30px;
             border: 1px solid var(--border);
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--text-main);
             font-size: 0.95rem;
             outline: none;
@@ -74,7 +77,7 @@
         }
         .search-container input:focus {
             border-color: var(--accent);
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.5);
         }
         .search-container button {
             position: absolute;
@@ -101,7 +104,7 @@
             padding-bottom: 2rem;
             border-bottom: 1px solid var(--border);
             margin-bottom: 2rem;
-            display: none; /* Nascosto all'inizio */
+            display: none;
         }
         .current-temp-box {
             display: flex;
@@ -111,17 +114,20 @@
         .weather-icon {
             font-size: 5rem;
             line-height: 1;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
         }
         .temp-huge {
             font-size: 4.5rem;
             font-weight: 700;
             margin: 0;
             letter-spacing: -2px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         .city-title {
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin: 0 0 5px 0;
             font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .weather-desc {
             color: var(--accent);
@@ -137,7 +143,7 @@
             display: none;
         }
         .detail-card {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             padding: 1.5rem;
             border-radius: 16px;
             border: 1px solid var(--border);
@@ -155,7 +161,7 @@
             font-weight: 600;
             margin: 0;
         }
-        /* --- FORECAST (Previsioni a 7 giorni) --- */
+        /* --- FORECAST --- */
         .forecast-container {
             margin-top: 2rem;
             display: none;
@@ -173,7 +179,7 @@
             padding-bottom: 10px;
         }
         .forecast-item {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             padding: 1rem;
             border-radius: 12px;
             text-align: center;
@@ -181,7 +187,7 @@
             border: 1px solid transparent;
             transition: border-color 0.3s;
         }
-        .forecast-item:hover { border-color: var(--border); }
+        .forecast-item:hover { border-color: var(--accent); }
         .forecast-day { font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; }
         .forecast-icon { font-size: 1.5rem; margin: 10px 0; }
         .forecast-temp { font-size: 1rem; font-weight: 600; }
@@ -204,19 +210,16 @@
 </head>
 <body>
     <div class="dashboard">
-        <!-- INTESTAZIONE E RICERCA -->
         <div class="header">
-            <h1>🌍 MeteoPro Dashboard</h1>
+            <h1>🌍 MeteoPro</h1>
             <div class="search-container">
                 <input type="text" id="city-input" placeholder="Cerca città (es. Roma)..." onkeypress="handleEnter(event)">
                 <button onclick="fetchWeatherData()">Cerca</button>
             </div>
         </div>
-        <!-- MESSAGGI DI STATO -->
         <div id="status-container" class="status-message">
             Inserisci una città per visualizzare le previsioni dettagliate.
         </div>
-        <!-- SEZIONE PRINCIPALE METEO -->
         <div class="weather-main" id="weather-main">
             <div>
                 <h2 class="city-title" id="display-city">--</h2>
@@ -228,7 +231,6 @@
                 <div class="temp-huge"><span id="temp-value">--</span>°</div>
             </div>
         </div>
-        <!-- DETTAGLI AGGIUNTIVI -->
         <div class="details-grid" id="details-grid">
             <div class="detail-card">
                 <div class="detail-title">Percepita</div>
@@ -247,19 +249,12 @@
                 <div class="detail-value"><span id="temp-min">--</span>° / <span id="temp-max">--</span>°</div>
             </div>
         </div>
-        <!-- PREVISIONI SETTIMANALI -->
         <div class="forecast-container" id="forecast-container">
             <div class="forecast-title">Previsioni Settimanali</div>
-            <div class="forecast-list" id="forecast-list">
-                <!-- Generato dinamicamente tramite Javascript -->
-            </div>
+            <div class="forecast-list" id="forecast-list"></div>
         </div>
     </div>
     <script>
-        /**
-         * MAPPA DEI CODICI METEO
-         * Traduce i codici numerici dell'API in icone e descrizioni testuali.
-         */
         const weatherCodes = {
             0:  { desc: "Cielo sereno", icon: "☀️" },
             1:  { desc: "Prevalentemente sereno", icon: "🌤️" },
@@ -279,37 +274,24 @@
             95: { desc: "Temporale", icon: "🌩️" },
             99: { desc: "Temporale forte", icon: "⛈️" }
         };
-        // Ritorna le info del meteo o un valore di default
-        function getWeatherInfo(code) {
-            return weatherCodes[code] || { desc: "Variabile", icon: "🌥️" };
-        }
-        // Permette la ricerca col tasto Invio
-        function handleEnter(event) {
-            if (event.key === 'Enter') fetchWeatherData();
-        }
-        // Formatta la data (Es: Lunedì 15 Settembre)
+        function getWeatherInfo(code) { return weatherCodes[code] || { desc: "Variabile", icon: "🌥️" }; }
+        function handleEnter(event) { if (event.key === 'Enter') fetchWeatherData(); }
+        
         function formatDate(dateString) {
-            const options = { weekday: 'long', day: 'numeric', month: 'long' };
             const date = new Date(dateString);
-            return date.toLocaleDateString('it-IT', options).replace(/^\w/, c => c.toUpperCase());
+            return date.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^\w/, c => c.toUpperCase());
         }
-        // Ottiene il nome del giorno abbreviato (es. Lun, Mar)
         function getShortDay(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('it-IT', { weekday: 'short' }).replace(/^\w/, c => c.toUpperCase());
         }
-        /**
-         * FUNZIONE PRINCIPALE: Gestisce la logica di recupero dati
-         */
         async function fetchWeatherData() {
             const cityInput = document.getElementById('city-input').value.trim();
             if (!cityInput) return;
-            // Elementi UI
             const statusContainer = document.getElementById('status-container');
             const weatherMain = document.getElementById('weather-main');
             const detailsGrid = document.getElementById('details-grid');
             const forecastContainer = document.getElementById('forecast-container');
-            // Reset stato UI
             weatherMain.style.display = 'none';
             detailsGrid.style.display = 'none';
             forecastContainer.style.display = 'none';
@@ -317,7 +299,6 @@
             statusContainer.innerHTML = 'Ricerca in corso... ⏳';
             statusContainer.className = 'status-message';
             try {
-                // 1. Geocoding: Ottiene le coordinate della città
                 const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityInput)}&count=1&language=it&format=json`;
                 const geoRes = await fetch(geoUrl);
                 const geoData = await geoRes.json();
@@ -326,45 +307,42 @@
                 }
                 const city = geoData.results[0];
                 
-                // 2. Weather API: Richiede meteo attuale, dettagli orari e previsioni giornaliere
                 const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current_weather=true&hourly=relativehumidity_2m,apparent_temperature&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto`;
                 const weatherRes = await fetch(weatherUrl);
                 const weatherData = await weatherRes.json();
-                // 3. Aggiorna l'interfaccia
                 updateUI(city.name, weatherData);
             } catch (error) {
-                console.error("Errore API:", error);
                 statusContainer.innerHTML = error.message;
                 statusContainer.className = 'status-message error';
             }
         }
-        /**
-         * FUNZIONE DI AGGIORNAMENTO UI: Popola il DOM con i dati ricevuti
-         */
         function updateUI(cityName, data) {
             const current = data.current_weather;
             const daily = data.daily;
             const hourly = data.hourly;
             
-            // Trova l'indice dell'ora attuale per prendere dati precisi
             const currentTimeStr = current.time.substring(0, 14) + "00"; 
             const hourIndex = hourly.time.findIndex(t => t === currentTimeStr) || 0;
             const weatherInfo = getWeatherInfo(current.weathercode);
-            // Popola Header Principale
+            // --- LA MAGIA DELLO SFONDO DINAMICO ---
+            // Aggiungiamo la foto della città sullo sfondo con un filtro scuro (rgba) per rendere il testo leggibile
+            document.body.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.85)), url('https://loremflickr.com/1920/1080/${encodeURIComponent(cityName)},city/all')`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+            document.body.style.backgroundAttachment = 'fixed';
+            // --------------------------------------
             document.getElementById('display-city').textContent = cityName;
             document.getElementById('temp-value').textContent = Math.round(current.temperature);
             document.getElementById('weather-desc').textContent = weatherInfo.desc;
             document.getElementById('main-icon').textContent = weatherInfo.icon;
             document.getElementById('date-display').textContent = formatDate(new Date());
-            // Popola Griglia Dettagli
             document.getElementById('wind-speed').textContent = current.windspeed;
             document.getElementById('feels-like').textContent = Math.round(hourly.apparent_temperature[hourIndex]);
             document.getElementById('humidity').textContent = hourly.relativehumidity_2m[hourIndex];
             document.getElementById('temp-max').textContent = Math.round(daily.temperature_2m_max[0]);
             document.getElementById('temp-min').textContent = Math.round(daily.temperature_2m_min[0]);
-            // Popola Previsioni a 7 giorni
             const forecastList = document.getElementById('forecast-list');
-            forecastList.innerHTML = ''; // Svuota vecchi dati
+            forecastList.innerHTML = ''; 
             
             for (let i = 1; i < 7; i++) {
                 const dayInfo = getWeatherInfo(daily.weathercode[i]);
@@ -378,7 +356,6 @@
                 `;
                 forecastList.insertAdjacentHTML('beforeend', dayHTML);
             }
-            // Mostra tutti i componenti
             document.getElementById('status-container').style.display = 'none';
             document.getElementById('weather-main').style.display = 'flex';
             document.getElementById('details-grid').style.display = 'grid';
