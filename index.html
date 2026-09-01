@@ -8,7 +8,7 @@
     <style>
         /* Variabili CSS */
         :root {
-            --card-bg: rgba(30, 41, 59, 0.85); /* Leggermente trasparente per far intravedere lo sfondo */
+            --card-bg: rgba(30, 41, 59, 0.85); 
             --text-main: #f8fafc;
             --text-muted: #cbd5e1;
             --accent: #38bdf8;
@@ -24,10 +24,9 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            /* Sfondo di default che verrà sostituito da Javascript */
             background-color: #0f172a; 
             background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
-            transition: background-image 1s ease-in-out; /* Transizione morbida quando cambia la foto */
+            transition: background-image 1s ease-in-out; 
         }
         .dashboard {
             width: 100%;
@@ -38,7 +37,7 @@
             padding: 2.5rem;
             border: 1px solid var(--border);
             margin: 20px;
-            backdrop-filter: blur(12px); /* Effetto vetro sfocato bellissimo! */
+            backdrop-filter: blur(12px); 
         }
         /* --- HEADER & SEARCH --- */
         .header {
@@ -54,9 +53,6 @@
             font-size: 1.5rem;
             font-weight: 600;
             letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .search-container {
@@ -211,7 +207,7 @@
 <body>
     <div class="dashboard">
         <div class="header">
-            <h1>🌍 MeteoPro</h1>
+            <h1>MeteoPro</h1>
             <div class="search-container">
                 <input type="text" id="city-input" placeholder="Cerca città (es. Roma)..." onkeypress="handleEnter(event)">
                 <button onclick="fetchWeatherData()">Cerca</button>
@@ -296,7 +292,7 @@
             detailsGrid.style.display = 'none';
             forecastContainer.style.display = 'none';
             statusContainer.style.display = 'block';
-            statusContainer.innerHTML = 'Ricerca in corso... ⏳';
+            statusContainer.innerHTML = 'Ricerca in corso...';
             statusContainer.className = 'status-message';
             try {
                 const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityInput)}&count=1&language=it&format=json`;
@@ -324,13 +320,11 @@
             const currentTimeStr = current.time.substring(0, 14) + "00"; 
             const hourIndex = hourly.time.findIndex(t => t === currentTimeStr) || 0;
             const weatherInfo = getWeatherInfo(current.weathercode);
-            // --- LA MAGIA DELLO SFONDO DINAMICO ---
-            // Aggiungiamo la foto della città sullo sfondo con un filtro scuro (rgba) per rendere il testo leggibile
+            // Sfondo dinamico con la foto della città
             document.body.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.85)), url('https://loremflickr.com/1920/1080/${encodeURIComponent(cityName)},city/all')`;
             document.body.style.backgroundSize = 'cover';
             document.body.style.backgroundPosition = 'center';
             document.body.style.backgroundAttachment = 'fixed';
-            // --------------------------------------
             document.getElementById('display-city').textContent = cityName;
             document.getElementById('temp-value').textContent = Math.round(current.temperature);
             document.getElementById('weather-desc').textContent = weatherInfo.desc;
