@@ -3,126 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Meteo</title>
+    <title>Gabriele Ricci | Software Developer</title>
+    <!-- Font moderno da Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        /* --- STILI GENERALI --- */
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(to right, #74ebd5, #acb6e5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            line-height: 1.6;
             margin: 0;
-            color: #333;
+            padding: 0;
+            background-color: #f0f4f8; 
+            color: #2c3e50;
         }
-        .weather-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        /* --- HEADER CON GRADIENTE E FOTO --- */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 4rem 1rem;
             text-align: center;
-            width: 320px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        h1 { margin-top: 0; font-size: 1.5rem; color: #2c3e50; }
-        .search-box {
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background-color: #e0e0e0;
+            margin: 0 auto 1rem auto;
             display: flex;
-            margin-bottom: 1.5rem;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #764ba2;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .search-box input {
-            flex: 1;
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+        /* --- CONTENITORE CENTRALE --- */
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: -2rem auto 3rem auto; 
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #764ba2;
+            border-bottom: 2px solid #f0f4f8;
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+        }
+        /* --- CARD DEI PROGETTI --- */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .project-card {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+        .project-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .project-link {
+            margin-top: auto;
+            display: inline-block;
+            background: #667eea;
+            color: white !important;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            text-align: center;
+            transition: background 0.3s;
+        }
+        .project-link:hover {
+            background: #764ba2;
+            text-decoration: none !important;
+        }
+        a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        /* --- CONTATTI --- */
+        .contact-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .contact-list li {
+            background: #f8f9fa;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            border: 1px solid #eee;
+            transition: all 0.3s;
+        }
+        .contact-list li:hover {
+            background: #fff;
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+        /* --- STILI PER IL CHATBOT --- */
+        #chat-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 65px;
+            height: 65px;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+        #chat-button:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+        #chat-window {
+            display: none;
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            width: 350px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            border: 1px solid #ddd;
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .chat-body {
+            height: 300px;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chat-message {
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            font-size: 0.95rem;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+        .bot-message {
+            background-color: #e9ecef;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .user-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .chat-input-area {
+            display: flex;
+            border-top: 1px solid #eee;
+            background: #fff;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 20px 0 0 20px;
+        }
+        #chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
             outline: none;
             font-family: inherit;
         }
-        .search-box button {
-            padding: 10px 20px;
-            border: none;
-            background: #74ebd5;
-            color: #2c3e50;
-            font-weight: bold;
-            border-radius: 0 20px 20px 0;
-            cursor: pointer;
-            transition: background 0.3s;
+        #chat-input:focus {
+            border-color: #667eea;
         }
-        .search-box button:hover { background: #56d4bc; }
-        
-        .weather-info { display: none; margin-top: 1rem; }
-        .temp { font-size: 3rem; font-weight: bold; margin: 10px 0; color: #2c3e50; }
-        .city-name { font-size: 1.2rem; font-weight: 600; }
-        .error { color: red; display: none; margin-top: 10px; font-size: 0.9rem; }
-        .loading { display: none; font-size: 0.9rem; color: #666; }
+        #send-btn {
+            background: transparent;
+            color: #764ba2;
+            border: none;
+            padding: 0 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        #send-btn:hover {
+            color: #667eea;
+        }
+        @media (max-width: 768px) {
+            .container { width: 95%; padding: 1.5rem; margin-top: -1rem; }
+            #chat-window { width: 90%; right: 5%; bottom: 100px; }
+            .contact-list { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
-    <div class="weather-card">
-        <h1>Previsioni Meteo</h1>
-        <div class="search-box">
-            <input type="text" id="city-input" placeholder="Es. Roma, Milano..." onkeypress="handleEnter(event)">
-            <button onclick="getWeather()">Cerca</button>
+    <header>
+        <div class="profile-pic">
+            GR
         </div>
+        <h1>Gabriele Ricci</h1>
+        <p>Software Developer | Costruisco soluzioni digitali</p>
+    </header>
+    <div class="container">
         
-        <div id="loading" class="loading">Caricamento dati... ⏳</div>
-        <div id="error-message" class="error">Città non trovata. Riprova.</div>
+        <h2>Chi sono</h2>
+        <p>Benvenuto nel mio portfolio! Sono uno sviluppatore appassionato di programmazione, focalizzato sulla creazione di software pulito e funzionale. Mi piace affrontare sfide logiche e imparare costantemente nuove tecnologie. Attualmente sto arricchendo il mio bagaglio tecnico e sono alla ricerca di nuove opportunità lavorative per dimostrare sul campo le mie competenze.</p>
+        <h2>I miei Progetti</h2>
         
-        <div id="weather-info" class="weather-info">
-            <div class="city-name" id="display-city">Roma</div>
-            <div class="temp"><span id="temp-value">25</span>°C</div>
-            <div id="weather-desc">Vento: 10 km/h</div>
+        <div class="project-grid">
+            <!-- PROGETTO 1 -->
+            <div class="project-card">
+                <h3>Laboratorio Imbroglia</h3>
+                <p>Applicazione software dedicata all'organizzazione e gestione delle attività del laboratorio.</p>
+                <a href="https://github.com/GabrieleRicci95/laboratorio-imbroglia" target="_blank" class="project-link">Vedi Codice su GitHub &rarr;</a>
+            </div>
+            <!-- PROGETTO 2 -->
+            <div class="project-card">
+                <h3>Gardigital Menu</h3>
+                <p>Sviluppo di un sistema interattivo per la visualizzazione di menu digitali, pensato per la ristorazione.</p>
+                <a href="https://github.com/GabrieleRicci95/gardigital-menu" target="_blank" class="project-link">Vedi Codice su GitHub &rarr;</a>
+            </div>
+            
+            <!-- PROGETTO 3: APP METEO -->
+            <div class="project-card">
+                <h3>App Meteo (API)</h3>
+                <p>Applicazione web in Javascript che comunica con server esterni (Open-Meteo API) per cercare coordinate GPS e mostrare la temperatura attuale di qualsiasi città in tempo reale.</p>
+                
+                <!-- Due bottoni per l'app meteo -->
+                <div style="display: flex; gap: 10px; margin-top: auto;">
+                    <a href="https://gabrielericci95.github.io/app-meteo/" target="_blank" class="project-link" style="flex: 1; background: #2c3e50;">Prova l'App ↗</a>
+                    <a href="https://github.com/GabrieleRicci95/app-meteo" target="_blank" class="project-link" style="flex: 1;">Codice &rarr;</a>
+                </div>
+            </div>
+        </div>
+        <h2>Contatti</h2>
+        <p>Vuoi saperne di più o collaborare a un progetto? Troviamoci online:</p>
+        <ul class="contact-list">
+            <li>📱 <strong>Telefono:</strong> 380 75 44 502</li>
+            <li>📧 <a href="mailto:gabrielericci234@gmail.com">gabrielericci234@gmail.com</a></li>
+            <li>💼 <a href="https://www.linkedin.com/in/gabriele-ricci-5b5047208/" target="_blank">Profilo LinkedIn</a></li>
+            <li>💻 <a href="https://github.com/GabrieleRicci95" target="_blank">GitHub</a></li>
+        </ul>
+    </div>
+    <!-- --- STRUTTURA HTML DEL CHATBOT --- -->
+    <button id="chat-button">💬</button>
+    <div id="chat-window">
+        <div class="chat-header">
+            Assistente di Gabriele 🤖
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="chat-message bot-message">
+                Ciao! 👋 Sono l'assistente virtuale di Gabriele. Puoi chiedermi delle sue "competenze", dei suoi "progetti" o i suoi "contatti". Come posso aiutarti?
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Scrivi qui..." onkeypress="handleKeyPress(event)">
+            <button id="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
+    <!-- --- LOGICA JAVASCRIPT DEL CHATBOT --- -->
     <script>
-        // Permette di cercare premendo "Invio" sulla tastiera
-        function handleEnter(event) {
-            if (event.key === 'Enter') {
-                getWeather();
+        const chatButton = document.getElementById('chat-button');
+        const chatWindow = document.getElementById('chat-window');
+        const chatBody = document.getElementById('chat-body');
+        const chatInput = document.getElementById('chat-input');
+        chatButton.addEventListener('click', () => {
+            if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
+                chatWindow.style.display = 'flex';
+            } else {
+                chatWindow.style.display = 'none';
+            }
+        });
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
             }
         }
-        // Funzione Asincrona: aspetta che i server esterni ci rispondano
-        async function getWeather() {
-            const cityInput = document.getElementById('city-input').value.trim();
-            if (cityInput === '') return;
-            const weatherInfo = document.getElementById('weather-info');
-            const errorMessage = document.getElementById('error-message');
-            const loading = document.getElementById('loading');
-            // Nascondiamo i vecchi dati e mostriamo "Caricamento"
-            weatherInfo.style.display = 'none';
-            errorMessage.style.display = 'none';
-            loading.style.display = 'block';
-            try {
-                // 1. Chiamata API per trasformare il nome della città in coordinate GPS
-                const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${cityInput}&count=1&language=it&format=json`;
-                const geoResponse = await fetch(geoUrl);
-                const geoData = await geoResponse.json();
-                if (!geoData.results || geoData.results.length === 0) {
-                    throw new Error("Città non trovata");
-                }
-                // Estraiamo latitudine, longitudine e nome preciso dal file JSON
-                const lat = geoData.results[0].latitude;
-                const lon = geoData.results[0].longitude;
-                const cityName = geoData.results[0].name;
-                // 2. Seconda chiamata API per avere il meteo usando le coordinate
-                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
-                const weatherResponse = await fetch(weatherUrl);
-                const weatherData = await weatherResponse.json();
-                // Estraiamo la temperatura dal JSON
-                const currentTemp = weatherData.current_weather.temperature;
-                const windSpeed = weatherData.current_weather.windspeed;
-                
-                // Aggiorniamo l'interfaccia HTML con i dati VERI appena scaricati!
-                document.getElementById('display-city').textContent = cityName;
-                document.getElementById('temp-value').textContent = Math.round(currentTemp);
-                document.getElementById('weather-desc').textContent = "Vento: " + windSpeed + " km/h";
-                // Togliamo "caricamento" e mostriamo i dati
-                loading.style.display = 'none';
-                weatherInfo.style.display = 'block';
-            } catch (error) {
-                console.error(error);
-                loading.style.display = 'none';
-                errorMessage.style.display = 'block'; // Mostra errore se la città non esiste
+        function sendMessage() {
+            const userText = chatInput.value.trim();
+            if (userText === '') return;
+            appendMessage(userText, 'user-message');
+            chatInput.value = '';
+            setTimeout(() => {
+                const botReply = getBotResponse(userText.toLowerCase());
+                appendMessage(botReply, 'bot-message');
+            }, 600);
+        }
+        function appendMessage(text, className) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message ' + className;
+            messageDiv.textContent = text;
+            chatBody.appendChild(messageDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+        function getBotResponse(input) {
+            if (input.includes('ciao') || input.includes('salve') || input.includes('buongiorno')) {
+                return 'Ciao! Grazie per aver visitato questo portfolio. Cosa vorresti sapere su Gabriele?';
             }
+            if (input.includes('competenze') || input.includes('linguaggi') || input.includes('tecnologie') || input.includes('sai fare')) {
+                return 'Gabriele è uno sviluppatore focalizzato sulla creazione di gestionali e applicazioni web robuste (come Gardigital Menu). Impara velocemente e si adatta a nuove tecnologie!';
+            }
+            if (input.includes('contatt') || input.includes('email') || input.includes('telefono') || input.includes('chiama') || input.includes('numero')) {
+                return 'Certo! Puoi chiamare Gabriele al numero 380 75 44 502, scrivergli una mail a gabrielericci234@gmail.com, oppure tramite il suo profilo LinkedIn (trovi i bottoni sulla pagina).';
+            }
+            if (input.includes('progetti') || input.includes('lavori') || input.includes('meteo')) {
+                return 'Attualmente i progetti principali sono "Laboratorio Imbroglia", "Gardigital Menu" e una nuovissima "App Meteo" basata su API. Provala subito, la trovi qui sulla pagina!';
+            }
+            return 'Interessante! Sono un bot ancora in addestramento, quindi ti consiglio di usare la sezione Contatti per parlare direttamente con Gabriele!';
         }
     </script>
 </body>
